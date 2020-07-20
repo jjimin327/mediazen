@@ -1,6 +1,8 @@
 package com.example.mediazen1;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -23,7 +25,14 @@ import java.util.List;
 
 
 public class NextResultActivity extends AppCompatActivity {
-    List <String> titleList = new ArrayList<>();
+    private static ArrayList<item> itemArrayList;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+
+    TextView title;
+
+
 
     int areaCode;
     int contentTypeId;
@@ -34,6 +43,23 @@ public class NextResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_next_result);
 
+        itemArrayList = new ArrayList<>();
+
+        title=(TextView)findViewById(R.id.textView_title);
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        //어답터 세팅
+        mAdapter = new MyAdapter(itemArrayList); //스트링 배열 데이터 인자로
+        mRecyclerView.setAdapter(mAdapter);
+
+
+
+
         //------------------------ 음성 텍스트 받아오기 -----------------------------
         Bundle intent = getIntent().getExtras();
         text = intent.getString("TEXT");
@@ -41,49 +67,70 @@ public class NextResultActivity extends AppCompatActivity {
         //areaCode
         if(text.contains("서울")){
             areaCode = 1;
+            title.setText("서울");
         }else if(text.contains("인천")){
             areaCode = 2;
+            title.setText("인천");
         }else if(text.contains("대전")){
             areaCode = 3;
+            title.setText("대전");
         }else if(text.contains("대구")){
             areaCode = 4;
+            title.setText("대구");
         }else if(text.contains("광주")){
             areaCode = 5;
+            title.setText("광주");
         }else if(text.contains("부산")){
             areaCode = 6;
+            title.setText("부산");
         }else if(text.contains("울산")) {
             areaCode = 7;
+            title.setText("울산");
         }else if(text.contains("세종")){
             areaCode = 8;
+            title.setText("세종");
         }else if(text.contains("경기")){
             areaCode = 31;
+            title.setText("경기");
         }else if(text.contains("강원")){
             areaCode = 32;
+            title.setText("강원");
         }else if(text.contains("충청북도")){
             areaCode = 33;
+            title.setText("충청북도");
         }else if(text.contains("충청남도")){
             areaCode = 34;
+            title.setText("충청남도");
         }else if(text.contains("경상북도")){
             areaCode = 35;
+            title.setText("경상북도");
         }else if(text.contains("경상남도")){
             areaCode = 36;
+            title.setText("경상남도");
         }else if(text.contains("전라북도")){
             areaCode = 37;
+            title.setText("전라북도");
         }else if(text.contains("전라남도")){
             areaCode = 38;
+            title.setText("전라남도");
         }else if(text.contains("제주도")){
             areaCode = 39;
+            title.setText("제주도");
         }
 
         //
         if(text.contains("명소") || text.contains("관광")){
             contentTypeId=12;
+            title.setText(title.getText()+" 명소");
         }else if(text.contains("문화")){
             contentTypeId=14;
+            title.setText(title.getText()+" 문화");
         }else if(text.contains("축제") || text.contains("공연") || text.contains("행사") ){
             contentTypeId=15;
+            title.setText(title.getText()+" 행사");
         }else if(text.contains("레포츠")){
             contentTypeId=28;
+            title.setText(title.getText()+" 레포츠");
         }
 
 
@@ -91,8 +138,8 @@ public class NextResultActivity extends AppCompatActivity {
 
 
         StrictMode.enableDefaults();
-
-        TextView status1 = (TextView)findViewById(R.id.title); //파싱된 결과확인!
+//
+//        TextView status1 = (TextView)findViewById(R.id.title); //파싱된 결과확인!
 
         boolean initem = false;
         boolean inTitle = false, inAddr1 = false, inFirstimage = false;
@@ -132,7 +179,6 @@ public class NextResultActivity extends AppCompatActivity {
                             inFirstimage = true;
                         }
                         if(parser.getName().equals("message")){ //message 태그를 만나면 에러 출력
-                            status1.setText(status1.getText()+"에러");
                             //여기에 에러코드에 따라 다른 메세지를 출력하도록 할 수 있다.
                         }
                         break;
@@ -154,21 +200,45 @@ public class NextResultActivity extends AppCompatActivity {
 
                     case XmlPullParser.END_TAG:
                         if(parser.getName().equals("item")){
-                            status1.setText(status1.getText()+"\n"+"\n title: "+ title +"\n address : "+ addr1 +"\n image : " + firstimage + "\n");
+                            itemArrayList.add(new item(title, addr1, firstimage));
                             initem = false;
                         }
                         break;
                 }
 
-                titleList.add(title);
-
                 parserEvent = parser.next();
             }
 
-
         } catch(Exception e){
-            status1.setText("에러가..났습니다...");
+
         }
     }
+
+    public class item {
+        String name;
+        String email;
+         String urlToImage;
+
+        public item(String name,String email, String urlToImage) {
+            this.name = name;
+            this.email = email;
+            this.urlToImage = urlToImage;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public String getUrlToImage(){
+            return urlToImage;
+        }
+    }
+
+    //--------------------------- 이미지 읽어오기 ---------------------------------
+
 
 }

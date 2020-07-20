@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ///////
+        //--------------------------------stt----------------------------------------------------
         //퍼미션 설정
         if(Build.VERSION.SDK_INT >= 21){
             ActivityCompat.requestPermissions(this,new String[]
